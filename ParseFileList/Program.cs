@@ -56,7 +56,7 @@ using System.IO;
         /// <param name=”optionList”>Which list to search,
         /// zero for first.</param>
 
-        public void Process(Uri url, String listType, int optionList)
+        public void Process(Uri url, int tableNum)
         {
 
             //ignore bad cert code
@@ -65,7 +65,7 @@ using System.IO;
             //code to allow program with work with different authentication schemes
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-            String listTypeEnd = listType + "/";
+            List<String> list = new List<String>();
             //WebRequest http = HttpWebRequest.Create(url);
             FileWebRequest http = (FileWebRequest)WebRequest.Create(url);
             //HttpWebResponse response = (HttpWebResponse)http.GetResponse();
@@ -74,28 +74,42 @@ using System.IO;
             ParseHTML parse = new ParseHTML(istream);
             StringBuilder buffer = new StringBuilder();
             bool capture = false;
-            Advance(parse, listType, optionList);
+            Advance(parse, "table", tableNum);
             int ch;
             while ((ch = parse.Read()) != -1)
             {
                 if (ch == 0)
                 {
                     HTMLTag tag = parse.Tag;
-                    if (String.Compare(tag.Name, "li", true) == 0)
+                    if (String.Compare(tag.Name, "tr", true) == 0)
+                    {
+                        list.Clear();
+                        capture = false;
+                        buffer.Length = 0;
+                    }
+                    else if (String.Compare(tag.Name, "/tr", true)
+                    == 0)
+                    {
+                        if (list.Count > 0)
+                        {
+                            ProcessTableRow(list);
+                            list.Clear();
+                        }
+                    }
+                    else if (String.Compare(tag.Name, "td", true) == 0)
                     {
                         if (buffer.Length > 0)
-                            ProcessItem(buffer.ToString());
+                            list.Add(buffer.ToString());
                         buffer.Length = 0;
                         capture = true;
                     }
-                    else if (String.Compare(tag.Name, "/li", true) == 0)
+                    else if (String.Compare(tag.Name, "/td", true) == 0)
                     {
-                        // Console.WriteLine(buffer.ToString());  //creates a double listing of each list item, might be left over debugging code
-                        ProcessItem(buffer.ToString());
+                        list.Add(buffer.ToString());
                         buffer.Length = 0;
                         capture = false;
                     }
-                    else if (String.Compare(tag.Name, listTypeEnd, true) == 0)
+                    else if (String.Compare(tag.Name, "/table", true) == 0)
                     {
                         break;
                     }
@@ -179,4 +193,4 @@ using System.IO;
         }
 
     }
-}//
+}

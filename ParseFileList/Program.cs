@@ -66,8 +66,10 @@ using System.IO;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
             String listTypeEnd = listType + "/";
-            WebRequest http = HttpWebRequest.Create(url);
-            HttpWebResponse response = (HttpWebResponse)http.GetResponse();
+            //WebRequest http = HttpWebRequest.Create(url);
+            FileWebRequest http = (FileWebRequest)WebRequest.Create(url);
+            //HttpWebResponse response = (HttpWebResponse)http.GetResponse();
+            FileWebResponse response = (FileWebResponse)http.GetResponse();
             Stream istream = response.GetResponseStream();
             ParseHTML parse = new ParseHTML(istream);
             StringBuilder buffer = new StringBuilder();
@@ -79,14 +81,14 @@ using System.IO;
                 if (ch == 0)
                 {
                     HTMLTag tag = parse.Tag;
-                    if (String.Compare(tag.Name, "a href=", true) == 0)
+                    if (String.Compare(tag.Name, "li", true) == 0)
                     {
                         if (buffer.Length > 0)
                             ProcessItem(buffer.ToString());
                         buffer.Length = 0;
                         capture = true;
                     }
-                    else if (String.Compare(tag.Name, "/a", true) == 0)
+                    else if (String.Compare(tag.Name, "/li", true) == 0)
                     {
                         // Console.WriteLine(buffer.ToString());  //creates a double listing of each list item, might be left over debugging code
                         ProcessItem(buffer.ToString());
@@ -114,11 +116,11 @@ using System.IO;
             parse.Process(u, "ul", 1);
 
             */
-
+            /*
             // obtain a URL to use
             if (args.Length < 1)
             {
-                Uri u = new Uri("https://10.0.0.17/stuff/");
+                Uri u = new Uri("https://10.0.0.17/list.php");
                 Program parse = new Program();
                 parse.Process(u, "ul", 1);
             }
@@ -128,7 +130,22 @@ using System.IO;
                 Program parse = new Program();
                 parse.Process(u, "ul", 1);
             }
+            */
 
+            if (args.Length != 1)
+            {
+                Console.WriteLine("Usage: ParseFileList [URL to Download]");
+            }
+            else
+            {
+                DownloadURL d = new DownloadURL();
+                d.Download(new Uri("http://"+args[0]+"/list.php"), "out.html");
+
+                Uri u = new Uri("file://C:/Users/rodney/Documents/Visual Studio 2015/Projects/bots/ParseFileList/ParseFileList/bin/Debug/out.html");
+                Program parse = new Program();
+                parse.Process(u, "ul", 1);
+                Console.WriteLine("we made it!");
+            }
 
         }//end main
 

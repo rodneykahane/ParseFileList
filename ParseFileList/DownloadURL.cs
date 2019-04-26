@@ -14,12 +14,10 @@ namespace ParseFileList
         /// download from.</param>
         /// <param name="filename">The local file to save to.
         /// </param>
-        public void DownloadBinaryFile(
-        HttpWebResponse response, String filename)
+        public void DownloadBinaryFile(HttpWebResponse response, String filename)
         {
             byte[] buffer = new byte[4096];
-            FileStream os = new FileStream(filename,
-            FileMode.Create);
+            FileStream os = new FileStream(filename, FileMode.Create);
             Stream stream = response.GetResponseStream();
             int count = 0;
             do
@@ -39,17 +37,12 @@ namespace ParseFileList
         /// download from.</param>
         /// <param name="filename">The local file to save to.
         /// </param>
-        public void DownloadTextFile(
-        HttpWebResponse response, String filename)
+        public void DownloadTextFile(HttpWebResponse response, String filename)
         {
             byte[] buffer = new byte[4096];
-            FileStream os = new FileStream(filename,
-                FileMode.Create);
-            StreamReader reader = new StreamReader(
-            response.GetResponseStream(),
-            System.Text.Encoding.ASCII);
-            StreamWriter writer = new StreamWriter(os,
-            System.Text.Encoding.ASCII);
+            FileStream os = new FileStream(filename, FileMode.Create);
+            StreamReader reader = new StreamReader(response.GetResponseStream(), System.Text.Encoding.ASCII);
+            StreamWriter writer = new StreamWriter(os, System.Text.Encoding.ASCII);
             String line;
             do
             {
@@ -95,15 +88,14 @@ namespace ParseFileList
         {
             if (args.Length != 2)
             {
-                Console.WriteLine(
-                "Usage: Recipe4_3 [URL to Download] [Output File]");
+                Console.WriteLine("Usage: DownloadURL [URL to Download] [Output File]");
             }
             else
             {
                 DownloadURL d = new DownloadURL();
                 d.Download(new Uri(args[0]), args[1]);
             }
-        }
+        } 
     }
 }
 

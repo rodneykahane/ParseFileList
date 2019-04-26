@@ -46,6 +46,31 @@ using System.IO;
             }
             return false;
         }
+
+
+        /// <summary>
+        /// This method is called once for each table row located,
+        /// it contains a list of all columns in that row. The
+        /// method provided simply prints the columns to the
+        /// console.
+        /// </summary>
+        /// <param name="list">Columns that were found on
+        /// this row.</param>
+        private void ProcessTableRow(List<String> list)
+        {
+            StringBuilder result = new StringBuilder();
+            foreach (String item in list)
+            {
+                if (result.Length > 0)
+                    result.Append(",");
+                result.Append('\"');
+                result.Append(item);
+                result.Append('\"');
+            }
+            Console.WriteLine(result.ToString());
+        }
+
+
         /// <summary>
         /// Called to extract a list from the specified URL.
         /// </summary>

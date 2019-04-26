@@ -157,7 +157,7 @@ using System.IO;
 
                 Uri u = new Uri("file://C:/Users/rodney/Documents/Visual Studio 2015/Projects/bots/ParseFileList/ParseFileList/bin/Debug/out.html");
                 Program parse = new Program();
-                parse.Process(u, "ul", 1);
+                parse.Process(u, 1);
                 Console.WriteLine("we made it!");
             }
 

@@ -81,7 +81,7 @@ using System.IO;
         /// <param name=”optionList”>Which list to search,
         /// zero for first.</param>
 
-        public void Process(Uri url, int tableNum)
+        public void ProcessTable(Uri url, int tableNum)
         {
 
             //ignore bad cert code
@@ -147,6 +147,65 @@ using System.IO;
             }
 
         }
+
+        public void ProcessList(Uri url, String listType, int optionList)
+        {
+
+            //ignore bad cert code
+            IgnoreBadCertificates();
+
+            //code to allow program with work with different authentication schemes
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+            String listTypeEnd = listType + "/";
+            //WebRequest http = HttpWebRequest.Create(url);
+            FileWebRequest http = (FileWebRequest)WebRequest.Create(url);
+            //HttpWebResponse response = (HttpWebResponse)http.GetResponse();
+            FileWebResponse response = (FileWebResponse)http.GetResponse();
+            Stream istream = response.GetResponseStream();
+            ParseHTML parse = new ParseHTML(istream);
+            StringBuilder buffer = new StringBuilder();
+            bool capture = false;
+            Advance(parse, listType, optionList);
+            int ch;
+            while ((ch = parse.Read()) != -1)
+            {
+                if (ch == 0)
+                {
+                    HTMLTag tag = parse.Tag;
+                    if (String.Compare(tag.Name, "li", true) == 0)
+                    {
+                        if (buffer.Length > 0)
+                            ProcessItem(buffer.ToString());
+                        buffer.Length = 0;
+                        capture = true;
+                    }
+                    else if (String.Compare(tag.Name, "/li", true) == 0)
+                    {
+                        // Console.WriteLine(buffer.ToString());  //creates a double listing of each list item, might be left over debugging code
+                        ProcessItem(buffer.ToString());
+                        buffer.Length = 0;
+                        capture = false;
+                    }
+                    else if (String.Compare(tag.Name, listTypeEnd, true) == 0)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    if (capture)
+                        buffer.Append((char)ch);
+                }
+            }
+
+        }
+
+
+
+
+
+
         static void Main(string[] args)
         {
             /*
@@ -171,19 +230,29 @@ using System.IO;
             }
             */
 
-            if (args.Length != 1)
+            if (args.Length != 2)
             {
-                Console.WriteLine("Usage: ParseFileList [URL to Download]");
+                Console.WriteLine("Usage: ParseFileList [URL to Download] ['table' or 'list]");
             }
-            else
+            else if (args[1] == "table") 
             {
                 DownloadURL d = new DownloadURL();
-                d.Download(new Uri("http://"+args[0]+"/list.php"), "out.html");
+                d.Download(new Uri("http://"+args[0]), "out.html");
 
                 Uri u = new Uri("file://C:/Users/rodney/Documents/Visual Studio 2015/Projects/bots/ParseFileList/ParseFileList/bin/Debug/out.html");
                 Program parse = new Program();
-                parse.Process(u, 1);
-                Console.WriteLine("we made it!");
+                parse.ProcessTable(u, 1);
+                Console.WriteLine("Which file(s) would you like to download?");
+            }
+            else if (args[1] == "list")
+            {
+                DownloadURL d = new DownloadURL();
+                d.Download(new Uri("http://" + args[0]), "out.html");
+
+                Uri u = new Uri("file://C:/Users/rodney/Documents/Visual Studio 2015/Projects/bots/ParseFileList/ParseFileList/bin/Debug/out.html");
+                Program parse = new Program();
+                parse.ProcessList(u,"ul", 1);
+                Console.WriteLine("Which files would you like to download?");
             }
 
         }//end main
@@ -217,5 +286,5 @@ using System.IO;
             return true;
         }
 
-    }
-}
+    }//end class
+}//end namespace

@@ -266,23 +266,30 @@ using System.IO;
                 DownloadURL d = new DownloadURL();
                 d.Download(new Uri("http://"+args[0]), "out.html");
 
-                Uri u = new Uri("file://C:/Users/rodney/Documents/Visual Studio 2015/Projects/bots/ParseFileList/ParseFileList/bin/Debug/out.html");
+               // Uri u = new Uri("file://C:/Users/rodney/Documents/Visual Studio 2015/Projects/bots/ParseFileList/ParseFileList/bin/Debug/out.html");
+                Uri u = new Uri("file://C:/Users/rodney/Source/Repos/ParseFileList/ParseFileList/bin/Debug/out.html");
                 Program parse = new Program();
                 parse.ProcessTable(u, 1);
-                Console.WriteLine("Which file(s) would you like to download?");
+                Console.Write("Which file(s) would you like to download? ");
+                String FileToDownload = Console.ReadLine();
+                Program df = new Program();
+                //Console.Write("URI being sent over is: " + "http://" + args[0] + "/" + FileToDownload);
+                df.DownloadBinaryFile(new Uri("http://" + args[0] + "/" + FileToDownload), "./" + FileToDownload);
             }
             else if (args[1] == "list")
             {
                 DownloadURL d = new DownloadURL();
                 d.Download(new Uri("http://" + args[0]), "out.html");
 
-                Uri u = new Uri("file://C:/Users/rodney/Documents/Visual Studio 2015/Projects/bots/ParseFileList/ParseFileList/bin/Debug/out.html");
+                //Uri u = new Uri("file://C:/Users/rodney/Documents/Visual Studio 2015/Projects/bots/ParseFileList/ParseFileList/bin/Debug/out.html");
+                Uri u = new Uri("file://C:/Users/rodney/Source/Repos/ParseFileList/ParseFileList/bin/Debug/out.html");
                 Program parse = new Program();
                 parse.ProcessList(u,"ul", 1);
-                Console.WriteLine("Which files would you like to download?");
+                Console.Write("Which files would you like to download? ");
                 String FileToDownload = Console.ReadLine();
                 Program df = new Program();
-                df.DownloadBinaryFile = (new Uri(args[0]),args[1]);
+               // Console.Write("URI being sent over is: " + "http://" + args[0] + "/" + FileToDownload);       
+                df.DownloadBinaryFile(new Uri("http://"+args[0]+"/"+FileToDownload),"./"+FileToDownload);
 
             }
 

@@ -79,23 +79,7 @@ namespace ParseFileList
                 DownloadTextFile(response, localFile);
             else
                 DownloadBinaryFile(response, localFile);
-        }
-        /// <summary>
-        /// The main entry point for the program.
-        /// </summary>
-        /// <param name="args">Program arguments.</param>
-        static void NotMain(string[] args)
-        {
-            if (args.Length != 2)
-            {
-                Console.WriteLine("Usage: DownloadURL [URL to Download] [Output File]");
-            }
-            else
-            {
-                DownloadURL d = new DownloadURL();
-                d.Download(new Uri(args[0]), args[1]);
-            }
-        } 
+        }         
     }
 }
 

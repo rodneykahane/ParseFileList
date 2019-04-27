@@ -12,6 +12,40 @@ using System.IO;
     class Program
     {
         /// <summary>
+        /// Used to convert strings to byte arrays.
+        /// </summary>
+        private System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+        
+        /// <summary>
+        /// This method downloads the specified URL into a C#
+        /// String. This is a very simple method, that you can
+        /// reused anytime you need to quickly grab all data
+        /// from a specific URL.
+        /// </summary>
+        /// <param name="url">The URL to download.</param>
+        /// <returns>The contents of the URL that was
+        /// downloaded.</returns>
+        public void DownloadBinaryFile(Uri url, String filename)
+        {
+            byte[] buffer = new byte[4096];
+            FileStream os = new FileStream(filename, FileMode.Create);
+            WebRequest http = HttpWebRequest.Create(url);
+            HttpWebResponse response = (HttpWebResponse)http.GetResponse();
+            Stream stream = response.GetResponseStream();
+            int count = 0;
+            do
+            {
+                count = stream.Read(buffer, 0,
+                buffer.Length);
+                if (count > 0)
+                    os.Write(buffer, 0, count);
+            } while (count > 0);
+            response.Close();
+            stream.Close();
+            os.Close();
+        }
+
+        /// <summary>
         /// Handle each list item, as it is found.
         /// </summary>
         /// <param name="item">The list item that was just found.</param>
@@ -112,8 +146,7 @@ using System.IO;
                         capture = false;
                         buffer.Length = 0;
                     }
-                    else if (String.Compare(tag.Name, "/tr", true)
-                    == 0)
+                    else if (String.Compare(tag.Name, "/tr", true) == 0)
                     {
                         if (list.Count > 0)
                         {
@@ -145,8 +178,7 @@ using System.IO;
                         buffer.Append((char)ch);
                 }
             }
-
-        }
+        }//end ProcessTable
 
         public void ProcessList(Uri url, String listType, int optionList)
         {
@@ -198,12 +230,7 @@ using System.IO;
                         buffer.Append((char)ch);
                 }
             }
-
-        }
-
-
-
-
+        }//end ProcessList
 
 
         static void Main(string[] args)
@@ -253,6 +280,10 @@ using System.IO;
                 Program parse = new Program();
                 parse.ProcessList(u,"ul", 1);
                 Console.WriteLine("Which files would you like to download?");
+                String FileToDownload = Console.ReadLine();
+                Program df = new Program();
+                df.DownloadBinaryFile = (new Uri(args[0]),args[1]);
+
             }
 
         }//end main
